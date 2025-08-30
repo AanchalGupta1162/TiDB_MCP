@@ -5,7 +5,7 @@ from mcp.server.fastmcp import FastMCP
 # --- Configure Logging ---
 # This helps you see server activity in the terminal.
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(_name_)
+log = logging.getLogger(__name__)
 
 # --- 1. Create the FastMCP Server Instance ---
 mcp = FastMCP("Academic Calendar Service")
