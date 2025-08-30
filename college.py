@@ -87,7 +87,13 @@ def get_events_by_type(event_type: str) -> str:
         return f"An internal error occurred: {e}"
 
 # --- 3. Run the Server ---
+async def main():
+    """An async main function to run the server."""
+    log.info("Starting FastMCP server asynchronously...")
+    await mcp.run()
+
 if __name__ == "__main__":
-    log.info("Starting FastMCP server...")
-    # The .run() method starts the built-in web server.
-    mcp.run()
+    # This command starts the Python asyncio event loop and runs our
+    # main() function. This is a blocking call that will keep the
+    # application alive on the server.
+    asyncio.run(main())
