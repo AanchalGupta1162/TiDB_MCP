@@ -90,4 +90,4 @@ def get_events_by_type(event_type: str) -> str:
 if __name__ == "__main__":
     log.info("Starting FastMCP server...")
     # The .run() method starts the built-in web server.
-    mcp.run(host="0.0.0.0", port=8080)
+    mcp.run()
