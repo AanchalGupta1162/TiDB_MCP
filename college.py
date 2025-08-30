@@ -1,6 +1,5 @@
 import mysql.connector
 import logging
-import asyncio
 from mcp.server.fastmcp import FastMCP
 
 # --- Configure Logging ---
@@ -87,14 +86,3 @@ def get_events_by_type(event_type: str) -> str:
         log.error(f"An error occurred in get_events_by_type: {e}")
         return f"An internal error occurred: {e}"
 
-# --- 3. Run the Server ---
-async def main():
-    """An async main function to run the server."""
-    log.info("Starting FastMCP server asynchronously...")
-    await mcp.run()
-
-if __name__ == "__main__":
-    # This command starts the Python asyncio event loop and runs our
-    # main() function. This is a blocking call that will keep the
-    # application alive on the server.
-    asyncio.run(main())
