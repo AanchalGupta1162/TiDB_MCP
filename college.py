@@ -1,5 +1,6 @@
 import mysql.connector
 import logging
+import asyncio
 from mcp.server.fastmcp import FastMCP
 
 # --- Configure Logging ---
