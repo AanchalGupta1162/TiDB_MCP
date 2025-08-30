@@ -86,5 +86,10 @@ def get_events_by_type(event_type: str) -> str:
         log.error(f"An error occurred in get_events_by_type: {e}")
         return f"An internal error occurred: {e}"
 
-app = mcp.asgi
+try:
+    app = mcp.asgi()
+except AttributeError:
+    # fallback for older SDKs
+    from mcp.server.transport.asgi import asgi_app
+    app = asgi_app(mcp)
 
