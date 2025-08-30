@@ -86,5 +86,5 @@ def get_events_by_type(event_type: str) -> str:
         log.error(f"An error occurred in get_events_by_type: {e}")
         return f"An internal error occurred: {e}"
 
-app = mcp.app
+app = mcp.asgi
 
