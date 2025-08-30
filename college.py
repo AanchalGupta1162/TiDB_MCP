@@ -1,29 +1,24 @@
 import mysql.connector
 import logging
 from mcp.server.fastmcp import FastMCP
-from dotenv import load_dotenv
-import os 
 
+# --- Configure Logging ---
+# This helps you see server activity in the terminal.
 logging.basicConfig(level=logging.INFO)
-log = logging.getLogger(__name__)
+log = logging.getLogger(_name_)
 
-
-load_dotenv() 
-
-
-TIDB_CONFIG = {
-    'user': os.environ.get('TIDB_USER'),
-    'password': os.environ.get('TIDB_PASSWORD'),
-    'host': os.environ.get('TIDB_HOST'),
-    'port': int(os.environ.get('TIDB_PORT', 4000)), 
-    'database': os.environ.get('TIDB_DATABASE')
-}
-
-if not all([TIDB_CONFIG['user'], TIDB_CONFIG['password'], TIDB_CONFIG['host'], TIDB_CONFIG['database']]):
-    raise ValueError("Missing one or more required database environment variables (TIDB_USER, TIDB_PASSWORD, TIDB_HOST, TIDB_DATABASE)")
-
+# --- 1. Create the FastMCP Server Instance ---
 mcp = FastMCP("Academic Calendar Service")
 
+# --- TiDB Connection Details ---
+# IMPORTANT: Replace these with your actual TiDB connection details.
+TIDB_CONFIG = {
+    'user': 'kJXFUfsnGgrD5x7.root',
+    'password': 'vZ0OV7hJ86Zi9gXz',
+    'host': 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com',
+    'port': 4000,
+    'database': 'MCP'
+}
 
 def get_db_connection():
     """Establishes a connection to the TiDB database."""
@@ -35,6 +30,7 @@ def get_db_connection():
         log.error(f"Error connecting to TiDB: {err}")
         raise ConnectionError(f"Failed to connect to the database: {err}") from err
 
+# --- 2. Define Tools with the @mcp.tool() Decorator ---
 
 @mcp.tool()
 def get_events_in_duration(start_date: str, end_date: str) -> str:
@@ -48,10 +44,11 @@ def get_events_in_duration(start_date: str, end_date: str) -> str:
     try:
         with get_db_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
-                query = "SELECT * FROM events WHERE event_date BETWEEN %s AND %s ORDER BY event_date, `start_time`"
+                query = "SELECT * FROM events WHERE event_date BETWEEN %s AND %s ORDER BY event_date, start_time"
                 cursor.execute(query, (start_date, end_date))
                 events = cursor.fetchall()
         
+                # Convert date/time objects to strings for clean output
                 for event in events:
                     for key, value in event.items():
                         event[key] = str(value)
@@ -74,7 +71,7 @@ def get_events_by_type(event_type: str) -> str:
     try:
         with get_db_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
-                query = "SELECT * FROM events WHERE LOWER(`event_type`) = LOWER(%s)"
+                query = "SELECT * FROM events WHERE LOWER(event_type) = LOWER(%s)"
                 cursor.execute(query, (event_type,))
                 events = cursor.fetchall()
 
@@ -89,6 +86,8 @@ def get_events_by_type(event_type: str) -> str:
         log.error(f"An error occurred in get_events_by_type: {e}")
         return f"An internal error occurred: {e}"
 
+# --- 3. Run the Server ---
 if __name__ == "__main__":
     log.info("Starting FastMCP server...")
-    mcp.run()
+    # The .run() method starts the built-in web server.
+    mcp.run(host="0.0.0.0", port=8080)
